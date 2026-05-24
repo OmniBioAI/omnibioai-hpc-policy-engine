@@ -3,3 +3,5 @@ uvicorn
 sqlalchemy
 pymysql
 pydantic
+swagger-ui-bundle
+aiofiles
