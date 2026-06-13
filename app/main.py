@@ -74,6 +74,11 @@ app.include_router(policy_router)
 app.include_router(quota_router)
 
 
+@app.get("/health", include_in_schema=False)
+async def health():
+    return {"status": "ok"}
+
+
 @app.get("/")
 async def root():
     return {
