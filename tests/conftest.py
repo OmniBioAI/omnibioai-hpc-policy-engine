@@ -1,7 +1,20 @@
+import sys
+import pathlib
+import tempfile
 import pytest
 from unittest.mock import MagicMock, patch
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+
+try:
+    import swagger_ui_bundle  # noqa: F401 — load real module so app.main can read its static files
+except ImportError:
+    _mock_ui_dir = tempfile.mkdtemp()
+    pathlib.Path(_mock_ui_dir, "swagger-ui-bundle.js").write_text("/* mock */")
+    pathlib.Path(_mock_ui_dir, "swagger-ui.css").write_text("/* mock */")
+    _mock_swagger = MagicMock()
+    _mock_swagger.swagger_ui_path = _mock_ui_dir
+    sys.modules["swagger_ui_bundle"] = _mock_swagger
 
 
 @pytest.fixture
