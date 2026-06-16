@@ -147,23 +147,32 @@ omnibioai-hpc-policy-engine/
 
 ---
 
+## Testing
+
+```bash
+cd ~/Desktop/machine/omnibioai-hpc-policy-engine
+pytest tests/ -v --cov=.
+
+# 34 tests passing
+# 92% coverage
+# Covers: quota service, usage service, policy routes,
+#         quota routes, HPC job evaluation
+```
+
+---
+
 # API Endpoints
 
 ---
 
 ## Health Check
 
-### GET `/`
+### GET `/health`
 
-Returns service status.
-
-Example response:
+Returns service health status.
 
 ```json
-{
-  "service": "omnibioai-hpc-policy-engine",
-  "status": "running"
-}
+{"status": "ok"}
 ```
 
 ---
@@ -311,71 +320,47 @@ Supported databases:
 
 ---
 
-# Installation
+## Running
 
-## Clone repository
+### Via OmniBioAI Studio (recommended)
 
 ```bash
-git clone git@github.com:man4ish/omnibioai-hpc-policy-engine.git
-cd omnibioai-hpc-policy-engine
+cd ~/Desktop/machine/omnibioai-studio
+docker compose up -d hpc-policy-engine
 ```
 
----
+Access (internal only):
+`http://hpc-policy-engine:8003` (Docker internal network)
 
-## Install dependencies
+### Standalone (development)
 
 ```bash
 pip install -r requirements.txt
+uvicorn app.main:app --host 0.0.0.0 --port 8003 --reload
 ```
 
----
-
-# Running Locally
+### Health check
 
 ```bash
-uvicorn app.main:app --reload
-```
-
-Default URL:
-
-```text
-http://localhost:8000
+curl http://localhost:8003/health
+# {"status": "ok"}
 ```
 
 ---
 
-# Docker Example
+## Roadmap
 
-```dockerfile
-FROM python:3.12-slim
-
-WORKDIR /app
-
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY . .
-
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-
----
-
-# Future Roadmap
-
-## Planned Features
-
-* Redis decision caching
-* Redis Pub/Sub invalidation
-* scheduler telemetry integration
-* Prometheus metrics
-* cost-aware routing
-* project budgets
-* per-team quotas
-* distributed quota aggregation
-* fair-share scheduling
-* GPU memory governance
-* HPC usage analytics
+| Feature | Status |
+|---------|--------|
+| CPU/GPU quota enforcement | ✓ Stable |
+| DGX partition access control | ✓ Stable |
+| Concurrent job limits | ✓ Stable |
+| MySQL-backed quota tracking | ✓ Stable |
+| Prometheus metrics | ✓ Implemented |
+| Redis decision caching | Planned |
+| Cost-aware routing | Planned v0.4 |
+| Per-team quotas | Planned v0.5 |
+| Fair-share scheduling | Planned v0.5 |
 
 ---
 
@@ -401,6 +386,19 @@ This service follows a zero-trust architecture:
 * policy enforcement before execution
 * distributed compute governance
 * centralized execution auditing
+
+---
+
+## Related Services
+
+| Service | Role |
+|---------|------|
+| `omnibioai-api-gateway` | Calls `/jobs/evaluate` for compute requests |
+| `omnibioai-policy-engine` | RBAC/ABAC decisions (called before HPC check) |
+| `omnibioai-auth` | Identity source (user roles) |
+| `omnibioai-tes` | Primary consumer — submits jobs after HPC approval |
+| `omnibioai-security-audit` | Receives HPC governance audit events |
+| `omnibioai-studio` | Manages hpc-policy-engine container lifecycle |
 
 ---
 
