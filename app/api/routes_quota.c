@@ -2483,7 +2483,7 @@ typedef struct {
   __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_pop;
   __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_values;
   PyObject *__pyx_codeobj_tab[1];
-  PyObject *__pyx_string_tab[59];
+  PyObject *__pyx_string_tab[58];
 /* #### Code section: module_state_contents ### */
 
 #if CYTHON_USE_FREELISTS
@@ -2570,33 +2570,32 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_func __pyx_string_tab[29]
 #define __pyx_n_u_get_db __pyx_string_tab[30]
 #define __pyx_n_u_get_or_create_user_usage __pyx_string_tab[31]
-#define __pyx_n_u_gpu_user __pyx_string_tab[32]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[33]
-#define __pyx_n_u_items __pyx_string_tab[34]
-#define __pyx_n_u_main __pyx_string_tab[35]
-#define __pyx_n_u_module __pyx_string_tab[36]
-#define __pyx_n_u_name __pyx_string_tab[37]
-#define __pyx_n_u_next __pyx_string_tab[38]
-#define __pyx_n_u_pop __pyx_string_tab[39]
-#define __pyx_n_u_post __pyx_string_tab[40]
-#define __pyx_n_u_prefix __pyx_string_tab[41]
-#define __pyx_n_u_qualname __pyx_string_tab[42]
-#define __pyx_n_u_quota_2 __pyx_string_tab[43]
-#define __pyx_n_u_request __pyx_string_tab[44]
-#define __pyx_n_u_roles __pyx_string_tab[45]
-#define __pyx_n_u_router __pyx_string_tab[46]
-#define __pyx_n_u_send __pyx_string_tab[47]
-#define __pyx_n_u_set_name __pyx_string_tab[48]
-#define __pyx_n_u_setdefault __pyx_string_tab[49]
-#define __pyx_n_u_sqlalchemy_orm __pyx_string_tab[50]
-#define __pyx_n_u_tags __pyx_string_tab[51]
-#define __pyx_n_u_test __pyx_string_tab[52]
-#define __pyx_n_u_throw __pyx_string_tab[53]
-#define __pyx_n_u_usage __pyx_string_tab[54]
-#define __pyx_n_u_user_id __pyx_string_tab[55]
-#define __pyx_n_u_value __pyx_string_tab[56]
-#define __pyx_n_u_values __pyx_string_tab[57]
-#define __pyx_kp_b_iso88591__3 __pyx_string_tab[58]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[32]
+#define __pyx_n_u_items __pyx_string_tab[33]
+#define __pyx_n_u_main __pyx_string_tab[34]
+#define __pyx_n_u_module __pyx_string_tab[35]
+#define __pyx_n_u_name __pyx_string_tab[36]
+#define __pyx_n_u_next __pyx_string_tab[37]
+#define __pyx_n_u_pop __pyx_string_tab[38]
+#define __pyx_n_u_post __pyx_string_tab[39]
+#define __pyx_n_u_prefix __pyx_string_tab[40]
+#define __pyx_n_u_qualname __pyx_string_tab[41]
+#define __pyx_n_u_quota_2 __pyx_string_tab[42]
+#define __pyx_n_u_request __pyx_string_tab[43]
+#define __pyx_n_u_roles __pyx_string_tab[44]
+#define __pyx_n_u_router __pyx_string_tab[45]
+#define __pyx_n_u_send __pyx_string_tab[46]
+#define __pyx_n_u_set_name __pyx_string_tab[47]
+#define __pyx_n_u_setdefault __pyx_string_tab[48]
+#define __pyx_n_u_sqlalchemy_orm __pyx_string_tab[49]
+#define __pyx_n_u_tags __pyx_string_tab[50]
+#define __pyx_n_u_test __pyx_string_tab[51]
+#define __pyx_n_u_throw __pyx_string_tab[52]
+#define __pyx_n_u_usage __pyx_string_tab[53]
+#define __pyx_n_u_user_id __pyx_string_tab[54]
+#define __pyx_n_u_value __pyx_string_tab[55]
+#define __pyx_n_u_values __pyx_string_tab[56]
+#define __pyx_kp_b_iso88591__3 __pyx_string_tab[57]
 /* #### Code section: module_state_clear ### */
 #if CYTHON_USE_MODULE_STATE
 static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
@@ -2616,7 +2615,7 @@ static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_ptype_3app_3api_12routes_quota___pyx_scope_struct__check_quota);
   Py_CLEAR(clear_module_state->__pyx_type_3app_3api_12routes_quota___pyx_scope_struct__check_quota);
   for (int i=0; i<1; ++i) { Py_CLEAR(clear_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<59; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<58; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
 /* #### Code section: module_state_clear_contents ### */
 /* CommonTypesMetaclass.module_state_clear */
 Py_CLEAR(clear_module_state->__pyx_CommonTypesMetaclassType);
@@ -2648,7 +2647,7 @@ static CYTHON_SMALL_CODE int __pyx_m_traverse(PyObject *m, visitproc visit, void
   Py_VISIT(traverse_module_state->__pyx_ptype_3app_3api_12routes_quota___pyx_scope_struct__check_quota);
   Py_VISIT(traverse_module_state->__pyx_type_3app_3api_12routes_quota___pyx_scope_struct__check_quota);
   for (int i=0; i<1; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<59; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<58; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
 /* #### Code section: module_state_traverse_contents ### */
 /* CommonTypesMetaclass.module_state_traverse */
 Py_VISIT(traverse_module_state->__pyx_CommonTypesMetaclassType);
@@ -2943,18 +2942,15 @@ static PyObject *__pyx_gb_3app_3api_12routes_quota_2generator(__pyx_CoroutineObj
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "app/api/routes_quota.py":27
- *         usage=usage,
- *         request=request,
- *         roles=["gpu_user"],             # <<<<<<<<<<<<<<
+  /* "app/api/routes_quota.py":30
+ *         # access regardless of their real roles -- now scoped to whatever
+ *         # the caller actually supplied (defaults to [] -- no roles).
+ *         roles=request.roles,             # <<<<<<<<<<<<<<
  *     )
  * 
 */
-  __pyx_t_3 = PyList_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 27, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_cur_scope->__pyx_v_request, __pyx_mstate_global->__pyx_n_u_roles); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 30, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_INCREF(__pyx_mstate_global->__pyx_n_u_gpu_user);
-  __Pyx_GIVEREF(__pyx_mstate_global->__pyx_n_u_gpu_user);
-  if (__Pyx_PyList_SET_ITEM(__pyx_t_3, 0, __pyx_mstate_global->__pyx_n_u_gpu_user) != (0)) __PYX_ERR(0, 27, __pyx_L1_error);
   __pyx_t_5 = 1;
   #if CYTHON_UNPACK_METHODS
   if (unlikely(PyMethod_Check(__pyx_t_2))) {
@@ -2986,7 +2982,7 @@ static PyObject *__pyx_gb_3app_3api_12routes_quota_2generator(__pyx_CoroutineObj
   __pyx_cur_scope->__pyx_v_decision = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "app/api/routes_quota.py":30
+  /* "app/api/routes_quota.py":33
  *     )
  * 
  *     return decision             # <<<<<<<<<<<<<<
@@ -4067,31 +4063,31 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 5; } index[] = {{1},{1},{23},{6},{7},{6},{2},{9},{6},{9},{7},{20},{10},{12},{7},{12},{12},{20},{16},{26},{26},{18},{11},{18},{5},{2},{8},{8},{7},{8},{6},{24},{8},{13},{5},{8},{10},{8},{4},{3},{4},{6},{12},{5},{7},{5},{6},{4},{12},{10},{14},{4},{8},{5},{5},{7},{5},{6},{14}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (389 bytes) */
-const char* const cstring = "BZh91AY&SY\202\203B\214\000\000\005\177\343`C0\000 \201\200\000\254!z\000\277\357\377\340@\000@@\000@@\0000\001L\321Xji2'\250i\247\2444\032\0004=C\322=\352\241\005OeO\323J\033SzP\003@\000\000\006\232\020&\247\251\2110&\324\000\006\206\324\321`\276F\203\201\r0\020\271g\214C\030\026\214\352\313'\021o\n\355A\336\027\362w\221\032\003J\246$</\345\006\211\304\264\316\013@\256U\211.4-b\240V_\2574G\231\207\323\270\007<\347\321&\233G\264\253K\005\367}\214.U\304E.\326\002\221K\255\014\346\222%JL\244\212Py\347X\254#,Wp\r\263d\034%_\301\213\227\245E8\261\244cYY\367\033\245\0049\205\002\301\205\332 \333\305\244I\213s[\001\264\356E\334\254y\331+\210\031\004\325I\034\"%x}L+\305@\351LoN\020s(2P\247\036P\334g\304(|'O(\010\244\240\271\n(\330\365\260\253\325\000\312a\030%t\201\255\224%\231\372\353\262\316ZN\321\020AHV\251I\r\231\214,`\000\231cz\234\300\276\320frGAp\274\004_\014&\230\321T\370uI\222\000\013\331Z\"u\002\340E$\307\035;\324\221\252\234\034H\"\203\334r,T\024\260\354\301Sk{Eu\\\364I\022O\361w$S\205\t\010(4(\300";
-    PyObject *data = __Pyx_DecompressString(cstring, 389, 2);
+    const struct { const unsigned int length: 5; } index[] = {{1},{1},{23},{6},{7},{6},{2},{9},{6},{9},{7},{20},{10},{12},{7},{12},{12},{20},{16},{26},{26},{18},{11},{18},{5},{2},{8},{8},{7},{8},{6},{24},{13},{5},{8},{10},{8},{4},{3},{4},{6},{12},{5},{7},{5},{6},{4},{12},{10},{14},{4},{8},{5},{5},{7},{5},{6},{14}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (385 bytes) */
+const char* const cstring = "BZh91AY&SY\0176\301Q\000\000\005\177\343`C0\000 \201\200\000\254!z\000\277\357\377\340@\000@@\000@@\0000\001L\325\030ji2\236\246\214\214M4b\0004=#\3227\352\241\0056S\311&\217L\220\017S@\000\000\006\232\020\230\247\251\246@C\322\000\006\207\244\321P\303\022\343\225\014\257\017\271g\224\003\030\026\214\354\312\262\0107\215\026\240\360\3749\307\350A\301\245S\002\036\027\362\203D\340Z\343\251f\025\302\261%\306\205\254\024\n\311\244\210\322/\311\334\003\236\177\275\022\344\334=\245Y\330/\273\355aE\\\004R\233\000R'KC\235\311\"m\266\005R):P\232\262\271\252\307^\021\244\301\3508\212?\005\244^\225\024\336\343U\211]\3423\224\001\346\024\r\001\205+\006\3404\310\223\026\315l\006\343\275\027z\214\354\225\300\014\200\311\224\254\244\026\000rpW:\000>\2760\034\310d\250\341y\014\373&Bi\205\000v3\374\240\"\222\202\344&\243k\326\302\257T\003+\2020J\351\003c(K3\323f\206=\256\244\206\211\021\264\347\007\234\346\343\214\300\032N\3542\305\301\351\255/zC\030\014E\201\027\303U\311\204\325O\206\2712@\001{+D]P(\010\234\230\341\300\2221\273\251\307@T\0351\226-\001K\021\320\025\025s4OM\323\242bI?\305\334\221N\024$\003\315\260T@";
+    PyObject *data = __Pyx_DecompressString(cstring, 385, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (337 bytes) */
-const char* const cstring = "x\332MQ\301N\3030\014\0257. \301\037p\342\326~\002B\354\302\005\215M\234\2554q\273hi\222\305\316Xo|\002\307}\032G>\005'\035\203Ju_l\307\357=\267yP1\266*\3326\205\314H\260\313\201U\023\247VoPo\215%\3259D_\342\240-\315\310\264\265\355q\371\274*\267\322\002#zC\000\313\351 \357\302j\206\027<\360\n\373\327\322\370TfU\264\306\264\267\032\327Hd\203\177#5\340)%:\032\321\321\030\214\364\213\377k*\2711\030t\324\234\3174_=e\200\376&\235+\271P\234+4ymC\243C\231l=Ru9\023h'\t\260\0368)\215\235\322[\355\002\241\351\014\212qQ\213{\345\262b\354\025\261\250\003\350\263\327\000\0032\230\256\304\220@'\224\016\310B\010\225z\210y>Y\2023\255e\034e[\243\0226y\304VvX\220W\243|\275\254.\206\030\003qL\330\333\003\210B\345\346b\325\232p\227\2218\005\207T\227\224\344\317\030\020\237|\232!\310\210\322\354\230vN9\3619NMH#\253A\230e\253,q\223\302{U9+4\305`u\211\364q\361}u\375uy\373y\177\2749\336\375\000\005\315\335\334";
-    PyObject *data = __Pyx_DecompressString(cstring, 337, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (334 bytes) */
+const char* const cstring = "x\332MQ\301N\3030\014\0257. \301\037p\342\326~\002B\354\302\005\215M\234-7q\273hi\222\305\311Xo|\002\307}\032G>\005'\035\203Ju_m\307\357=\247y\300\020Z\014\246\215>'b\330e\237\260\tS\2536\244\266\3320v\226\310\2258(\3033\322mm{\\>\257\312\251\270\240@N3\300r:\310\2730*\301\013\035\322\212\372\327\322\370TfU\264\246\2707\212\326\304l\274{c\034\350\224\022\035\215\350h4\005\376\305\3775\225\334\3505Yn\316\377<\037=e\200\377&\235+\271P\234+<9e|\243|\231l\034qu9\023(+\t0\016RDE\035\252\255\262\236Iw\232\304\270\250\245=\332\214\211z\344$\352\000\372\354\024\300@\ttW\242\217\240\"I\007d!\204\231\3320\234\351L\242Q\2664\242\260\310#v\262\245\202\034\216\362u\262\262\340C\360\234B\244\336\034@\224\241\235\213Uc\244]&N\321[\342\272\234(7\242A\374\245\323\014AZ\024f\233xg\321\212\277qj|\034\023\016\302,\333L\0227\321\277WuU\247\321\305XuG\374q\361}u\375uy\373y\177\2749\336\375\000\006\376\332r";
+    PyObject *data = __Pyx_DecompressString(cstring, 334, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (551 bytes) */
-const char* const bytes = ".?app/api/routes_quota.py/checkdisableenablegcisenabled/quotaAPIRouterDepends__Pyx_PyDict_NextRefQuotaCheckQuotaServiceSessionUsageServiceapp.api.depsapp.api.routes_quotaapp.models.quotaapp.services.quota_serviceapp.services.usage_serviceasyncio.coroutinescheck_quotacline_in_tracebackclosedbdecisionevaluatefastapi__func__get_dbget_or_create_user_usagegpu_user_is_coroutineitems__main____module____name__nextpoppostprefix__qualname__quotarequestrolesroutersend__set_name__setdefaultsqlalchemy.ormtags__test__throwusageuser_idvaluevalues\200\001\340\r\016\330\010\022\220'\230\021\230!";
+    #else /* compression: none (543 bytes) */
+const char* const bytes = ".?app/api/routes_quota.py/checkdisableenablegcisenabled/quotaAPIRouterDepends__Pyx_PyDict_NextRefQuotaCheckQuotaServiceSessionUsageServiceapp.api.depsapp.api.routes_quotaapp.models.quotaapp.services.quota_serviceapp.services.usage_serviceasyncio.coroutinescheck_quotacline_in_tracebackclosedbdecisionevaluatefastapi__func__get_dbget_or_create_user_usage_is_coroutineitems__main____module____name__nextpoppostprefix__qualname__quotarequestrolesroutersend__set_name__setdefaultsqlalchemy.ormtags__test__throwusageuser_idvaluevalues\200\001\340\r\016\330\010\022\220'\230\021\230!";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
     PyObject **stringtab = __pyx_mstate->__pyx_string_tab;
     Py_ssize_t pos = 0;
-    for (int i = 0; i < 58; i++) {
+    for (int i = 0; i < 57; i++) {
       Py_ssize_t bytes_length = index[i].length;
       PyObject *string = PyUnicode_DecodeUTF8(bytes + pos, bytes_length, NULL);
       if (likely(string) && i >= 9) PyUnicode_InternInPlace(&string);
@@ -4102,7 +4098,7 @@ const char* const bytes = ".?app/api/routes_quota.py/checkdisableenablegcisenabl
       stringtab[i] = string;
       pos += bytes_length;
     }
-    for (int i = 58; i < 59; i++) {
+    for (int i = 57; i < 58; i++) {
       Py_ssize_t bytes_length = index[i].length;
       PyObject *string = PyBytes_FromStringAndSize(bytes + pos, bytes_length);
       stringtab[i] = string;
@@ -4113,14 +4109,14 @@ const char* const bytes = ".?app/api/routes_quota.py/checkdisableenablegcisenabl
       }
     }
     Py_XDECREF(data);
-    for (Py_ssize_t i = 0; i < 59; i++) {
+    for (Py_ssize_t i = 0; i < 58; i++) {
       if (unlikely(PyObject_Hash(stringtab[i]) == -1)) {
         __PYX_ERR(0, 1, __pyx_L1_error)
       }
     }
     #if CYTHON_IMMORTAL_CONSTANTS
     {
-      PyObject **table = stringtab + 58;
+      PyObject **table = stringtab + 57;
       for (Py_ssize_t i=0; i<1; ++i) {
         #if CYTHON_COMPILING_IN_CPYTHON_FREETHREADING
         #if PY_VERSION_HEX < 0x030E0000

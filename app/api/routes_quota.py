@@ -24,7 +24,10 @@ async def check_quota(
     decision = QuotaService.evaluate(
         usage=usage,
         request=request,
-        roles=["gpu_user"],
+        # PR12: was hardcoded to ["gpu_user"], granting every caller GPU
+        # access regardless of their real roles -- now scoped to whatever
+        # the caller actually supplied (defaults to [] -- no roles).
+        roles=request.roles,
     )
 
     return decision

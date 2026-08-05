@@ -1,9 +1,15 @@
 """
 Quota route tests.
 
-NOTE: QuotaCheck model has no `partition` field, but QuotaService.evaluate()
-calls request.partition — this is a source-code bug. We mock QuotaService.evaluate
-at the route module level so the tests don't hit that path.
+PR12: QuotaCheck now has `partition` (default "cpu") and `roles` (default
+[]) fields -- previously missing entirely, worked around by mocking
+QuotaService.evaluate at the route module level so tests never hit the
+real (broken: request.partition didn't exist, and roles was hardcoded to
+["gpu_user"] for every caller) path. Still mocked here since these tests
+are about the route's DB-wiring/response-shaping, not QuotaService's own
+logic (covered by test_quota_service.py) -- but see
+test_quota_check_passes_caller_roles_not_hardcoded below for the
+regression test locking in the hardcoded-roles fix.
 """
 import pytest
 from unittest.mock import MagicMock, patch
@@ -160,3 +166,38 @@ def test_quota_check_passes_db_to_usage_service(client):
     # Verifies DB dependency injection works
     first_arg = mock_service.call_args[0][0]
     assert first_arg is mock_db
+
+
+def test_quota_check_passes_caller_roles_not_hardcoded(client):
+    """Regression test: routes_quota.py used to hardcode roles=["gpu_user"]
+    for every request, regardless of the caller's real roles -- meaning
+    any user could pass a GPU/DGX quota check. The route must now forward
+    whatever roles the caller actually supplied."""
+    tc, mock_db = client
+    usage = MagicMock(cpu_hours=0.0, gpu_hours=0.0)
+
+    with patch("app.api.routes_quota.UsageService.get_or_create_user_usage",
+               return_value=usage), \
+         patch("app.api.routes_quota.QuotaService.evaluate",
+               return_value=_allow()) as mock_evaluate:
+
+        tc.post("/quota/check", json={
+            "user_id": "u6", "cpu_hours": 1.0, "gpu_hours": 0.0, "gpus": 0,
+            "roles": ["viewer"],
+        })
+
+    assert mock_evaluate.call_args.kwargs["roles"] == ["viewer"]
+
+
+def test_quota_check_defaults_to_no_roles_when_unsupplied(client):
+    tc, mock_db = client
+    usage = MagicMock(cpu_hours=0.0, gpu_hours=0.0)
+
+    with patch("app.api.routes_quota.UsageService.get_or_create_user_usage",
+               return_value=usage), \
+         patch("app.api.routes_quota.QuotaService.evaluate",
+               return_value=_allow()) as mock_evaluate:
+
+        tc.post("/quota/check", json={"user_id": "u7", "cpu_hours": 1.0, "gpu_hours": 0.0, "gpus": 0})
+
+    assert mock_evaluate.call_args.kwargs["roles"] == []
