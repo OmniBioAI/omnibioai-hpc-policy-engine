@@ -153,8 +153,8 @@ omnibioai-hpc-policy-engine/
 cd ~/Desktop/machine/omnibioai-hpc-policy-engine
 pytest tests/ -v --cov=.
 
-# 34 tests passing
-# 92% coverage
+# 69 tests passing
+# 99% coverage
 # Covers: quota service, usage service, policy routes,
 #         quota routes, HPC job evaluation
 ```
