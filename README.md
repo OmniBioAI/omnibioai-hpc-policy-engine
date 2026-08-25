@@ -39,6 +39,13 @@ This service specifically handles:
 
 > Compute-aware resource governance and execution feasibility.
 
+This service does not currently authenticate JWTs itself. The policy and
+quota request models accept a caller-supplied `roles` list, so the API must
+only be exposed behind a trusted gateway or service that has already
+authenticated the caller and populated those roles. Do not expose these
+routes as a public authorization boundary until local IAM verification is
+added.
+
 ---
 
 # Core Responsibilities
@@ -94,7 +101,7 @@ TES / Scheduler
 ## Distributed Architecture
 
 * FastAPI-based async APIs
-* Redis-compatible architecture
+* Redis configuration reserved for future decision caching
 * scalable stateless design
 * scheduler abstraction layer
 
@@ -153,10 +160,9 @@ omnibioai-hpc-policy-engine/
 cd ~/Desktop/machine/omnibioai-hpc-policy-engine
 pytest tests/ -v --cov=.
 
-# 69 tests passing
-# 99% coverage
-# Covers: quota service, usage service, policy routes,
-#         quota routes, HPC job evaluation
+# Covers quota service, usage service, policy routes,
+# quota routes, and HPC job evaluation. Review the measured test output
+# rather than relying on a fixed count or coverage percentage.
 ```
 
 ---
@@ -192,7 +198,8 @@ Evaluates whether a workload exceeds compute quotas.
   "user_id": "u123",
   "cpu_hours": 12,
   "gpu_hours": 2,
-  "gpus": 1
+  "gpus": 1,
+  "roles": ["gpu_user"]
 }
 ```
 
@@ -224,7 +231,8 @@ Evaluates HPC-specific execution policies.
   "user_id": "u123",
   "partition": "dgx-a100",
   "gpus": 1,
-  "memory_gb": 128
+  "memory_gb": 128,
+  "roles": ["gpu_user", "dgx_access"]
 }
 ```
 
@@ -296,11 +304,9 @@ This enables future integrations with:
 
 Current implementation uses SQLAlchemy.
 
-Supported databases:
-
-* MySQL
-* MariaDB
-* PostgreSQL
+The current implementation constructs a MySQL/PyMySQL URL directly in
+`app/db/session.py`. MySQL-compatible deployments are supported today.
+MariaDB and PostgreSQL are not currently selectable without code changes.
 
 ---
 
@@ -318,6 +324,12 @@ Supported databases:
 | `DEFAULT_GPU_HOURS`   | Default GPU quota    | `24`                 |
 | `MAX_CONCURRENT_JOBS` | Concurrent job limit | `5`                  |
 
+The application reads the `MYSQL_*` variables above. The current Studio
+Compose entry uses `DB_HOST`, `DB_USER`, `DB_PASSWORD`, and `DB_NAME` for
+this service, so those names must be reconciled before relying on custom
+database credentials in Compose; otherwise the application falls back to
+its `MYSQL_*` defaults.
+
 ---
 
 ## Running
@@ -331,6 +343,9 @@ docker compose up -d hpc-policy-engine
 
 Access (internal only):
 `http://hpc-policy-engine:8003` (Docker internal network)
+
+The service also exposes `/` with a running-status response and `/docs` with
+the generated Swagger UI. The health endpoint is `/health`.
 
 ### Standalone (development)
 
@@ -346,6 +361,14 @@ curl http://localhost:8003/health
 # {"status": "ok"}
 ```
 
+### Current schema behavior
+
+The application currently calls `Base.metadata.create_all()` during startup.
+This creates missing tables but is not a versioned migration workflow. Treat
+the database as service-owned and verify schema changes carefully before
+production deployment; Alembic migrations are not currently included in this
+repository.
+
 ---
 
 ## Roadmap
@@ -356,7 +379,7 @@ curl http://localhost:8003/health
 | DGX partition access control | ✓ Stable |
 | Concurrent job limits | ✓ Stable |
 | MySQL-backed quota tracking | ✓ Stable |
-| Prometheus metrics | ✓ Implemented |
+| Prometheus metrics endpoint | Not exposed yet |
 | Redis decision caching | Planned |
 | Cost-aware routing | Planned v0.4 |
 | Per-team quotas | Planned v0.5 |
@@ -381,7 +404,8 @@ Designed to integrate with:
 
 This service follows a zero-trust architecture:
 
-* every request evaluated independently
+* every request evaluated independently by the policy checks
+* authentication is expected to happen upstream
 * no implicit scheduler trust
 * policy enforcement before execution
 * distributed compute governance
