@@ -1,3 +1,9 @@
+"""Unit tests for UsageService.get_or_create_user_usage against a mocked database
+session: an existing usage record is returned as-is, and a missing one is
+created with zero usage, committed and refreshed.
+
+Developer: Manish Kumar <manish@omnibioai.org>
+"""
 import pytest
 from unittest.mock import MagicMock, patch, call
 from app.services.usage_service import UsageService
@@ -19,6 +25,7 @@ def _make_db(existing_record=None):
 # ---------------------------------------------------------------------------
 
 def test_returns_existing_record_if_found():
+    """An existing usage record is returned without adding to or committing the session."""
     record = MagicMock()
     record.user_id = "u1"
     db = _make_db(existing_record=record)
@@ -31,6 +38,7 @@ def test_returns_existing_record_if_found():
 
 
 def test_creates_new_record_if_not_found():
+    """When no record exists, one is added, committed and refreshed once each."""
     db = _make_db(existing_record=None)
 
     result = UsageService.get_or_create_user_usage(db, "new-user")
@@ -41,6 +49,9 @@ def test_creates_new_record_if_not_found():
 
 
 def test_new_record_has_zero_usage():
+    """A newly created usage record carries the requested user id and zero CPU hours, GPU hours and
+    running jobs.
+    """
     captured = []
 
     def capture_add(record):
@@ -60,6 +71,9 @@ def test_new_record_has_zero_usage():
 
 
 def test_returns_refreshed_record_for_new_user():
+    """The new record is refreshed after creation, and db.refresh is called once with the returned
+    record.
+    """
     db = _make_db(existing_record=None)
     refreshed = MagicMock()
     db.refresh.side_effect = lambda r: setattr(r, "_refreshed", True)
@@ -70,6 +84,7 @@ def test_returns_refreshed_record_for_new_user():
 
 
 def test_queries_correct_user_id():
+    """get_or_create_user_usage queries the UsageRecord table."""
     from app.db.models import UsageRecord
     record = MagicMock()
     db = _make_db(existing_record=record)

@@ -9,6 +9,8 @@ for real, same as tests/test_routes_policy.py (kept intact, not modified).
 This file adds validation/edge-case coverage that file doesn't target:
 negative resource values, malformed roles, unknown/extra fields, malformed
 JSON bodies, and the org_id no-op characterization.
+
+Developer: Manish Kumar <manish@omnibioai.org>
 """
 import pytest
 from fastapi import FastAPI
@@ -21,6 +23,9 @@ routes_policy_mod = load("app/api/routes_policy.py")
 
 @pytest.fixture
 def client():
+    """Provide a TestClient for a FastAPI app that includes the policy router loaded directly from
+    its .py source.
+    """
     app = FastAPI()
     app.include_router(routes_policy_mod.router)
     return TestClient(app)
@@ -31,12 +36,16 @@ def client():
 # ---------------------------------------------------------------------------
 
 def test_default_request_approved(client):
+    """A minimal request with only a user_id is approved and returns exactly allow true, reason "job
+    approved" and partition "cpu".
+    """
     response = client.post("/jobs/evaluate", json={"user_id": "u1"})
     assert response.status_code == 200
     assert response.json() == {"allow": True, "reason": "job approved", "partition": "cpu"}
 
 
 def test_gpu_request_without_role_denied(client):
+    """A request for GPUs without the gpu_user role is denied with reason "gpu access denied"."""
     response = client.post("/jobs/evaluate", json={"user_id": "u1", "gpus": 2})
     data = response.json()
     assert data["allow"] is False
@@ -44,6 +53,9 @@ def test_gpu_request_without_role_denied(client):
 
 
 def test_dgx_request_with_gpu_role_but_no_dgx_role_denied(client):
+    """A dgx-a100 request whose roles include gpu_user but not dgx_access is denied with reason "dgx
+    partition denied".
+    """
     response = client.post("/jobs/evaluate", json={
         "user_id": "u1", "gpus": 1, "partition": "dgx-a100", "roles": ["gpu_user"],
     })
@@ -53,6 +65,7 @@ def test_dgx_request_with_gpu_role_but_no_dgx_role_denied(client):
 
 
 def test_dgx_request_with_both_roles_allowed(client):
+    """A dgx-a100 request whose roles include gpu_user and dgx_access is allowed."""
     response = client.post("/jobs/evaluate", json={
         "user_id": "u1", "gpus": 1, "partition": "dgx-a100",
         "roles": ["gpu_user", "dgx_access"],
@@ -65,16 +78,20 @@ def test_dgx_request_with_both_roles_allowed(client):
 # ---------------------------------------------------------------------------
 
 def test_missing_user_id_rejected(client):
+    """With the router loaded from source, a job evaluation without a user_id is rejected with 422.
+    """
     response = client.post("/jobs/evaluate", json={"gpus": 1})
     assert response.status_code == 422
 
 
 def test_empty_body_rejected(client):
+    """An empty JSON body is rejected with 422."""
     response = client.post("/jobs/evaluate", json={})
     assert response.status_code == 422
 
 
 def test_malformed_json_body_rejected(client):
+    """A request body that is not valid JSON is rejected with 422."""
     response = client.post(
         "/jobs/evaluate",
         content="{not valid json",
@@ -90,6 +107,7 @@ def test_roles_as_wrong_type_rejected(client):
 
 
 def test_gpus_as_wrong_type_rejected(client):
+    """A non-numeric gpus value is rejected with 422."""
     response = client.post("/jobs/evaluate", json={"user_id": "u1", "gpus": "not-a-number"})
     assert response.status_code == 422
 
@@ -123,6 +141,9 @@ def test_unknown_extra_fields_are_ignored(client):
 
 
 def test_duplicate_role_entries_do_not_change_outcome(client):
+    """Repeating a role in the request does not change the outcome: a GPU request with gpu_user
+    listed three times is allowed.
+    """
     response = client.post("/jobs/evaluate", json={
         "user_id": "u1", "gpus": 1, "roles": ["gpu_user", "gpu_user", "gpu_user"],
     })
@@ -146,6 +167,7 @@ def test_org_id_accepted_but_has_no_effect_on_decision(client):
 
 
 def test_missing_org_id_defaults_to_none_and_still_evaluates(client):
+    """A request without an org_id is still evaluated and returns 200."""
     response = client.post("/jobs/evaluate", json={"user_id": "u1"})
     assert response.status_code == 200
 
@@ -158,5 +180,6 @@ def test_empty_user_id_string_is_accepted_by_validation(client):
 
 
 def test_user_id_wrong_type_rejected(client):
+    """A numeric user_id is rejected with 422."""
     response = client.post("/jobs/evaluate", json={"user_id": 12345})
     assert response.status_code == 422

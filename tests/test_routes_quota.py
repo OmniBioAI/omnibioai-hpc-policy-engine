@@ -10,6 +10,8 @@ are about the route's DB-wiring/response-shaping, not QuotaService's own
 logic (covered by test_quota_service.py) -- but see
 test_quota_check_passes_caller_roles_not_hardcoded below for the
 regression test locking in the hardcoded-roles fix.
+
+Developer: Manish Kumar <manish@omnibioai.org>
 """
 import pytest
 from unittest.mock import MagicMock, patch
@@ -20,17 +22,20 @@ from app.models.decision import Decision
 
 
 def _allow(**kwargs):
+    """Build an allowing Decision with quota-ok defaults and optional field overrides."""
     defaults = dict(allow=True, reason="quota ok", remaining_cpu_hours=100.0, remaining_gpu_hours=20.0)
     defaults.update(kwargs)
     return Decision(**defaults)
 
 
 def _deny(reason="cpu quota exceeded"):
+    """Build a denying Decision with the given reason."""
     return Decision(allow=False, reason=reason, remaining_cpu_hours=2.0, remaining_gpu_hours=20.0)
 
 
 @pytest.fixture
 def quota_app():
+    """Provide a FastAPI app that includes only the quota router."""
     from app.api.routes_quota import router
     app = FastAPI()
     app.include_router(router)
@@ -39,6 +44,9 @@ def quota_app():
 
 @pytest.fixture
 def client(quota_app):
+    """Provide a TestClient for the quota app with get_db overridden by a mock session, together
+    with that session.
+    """
     mock_db = MagicMock()
     quota_app.dependency_overrides[get_db] = lambda: mock_db
     return TestClient(quota_app), mock_db
@@ -49,6 +57,7 @@ def client(quota_app):
 # ---------------------------------------------------------------------------
 
 def test_quota_check_allow_within_limits(client):
+    """/quota/check returns 200 with allow true when the quota service allows the request."""
     tc, mock_db = client
     usage = MagicMock(cpu_hours=10.0, gpu_hours=2.0, jobs_running=0)
 
@@ -69,6 +78,9 @@ def test_quota_check_allow_within_limits(client):
 
 
 def test_quota_check_deny_cpu_exceeded(client):
+    """/quota/check returns 200 with allow false and a reason mentioning cpu when the quota service
+    denies for CPU.
+    """
     tc, mock_db = client
     usage = MagicMock(cpu_hours=118.0, gpu_hours=0.0)
 
@@ -91,6 +103,9 @@ def test_quota_check_deny_cpu_exceeded(client):
 
 
 def test_quota_check_deny_gpu_exceeded(client):
+    """/quota/check returns 200 with allow false and a reason mentioning gpu when the quota service
+    denies for GPU.
+    """
     tc, mock_db = client
     usage = MagicMock(cpu_hours=0.0, gpu_hours=23.0)
 
@@ -112,6 +127,7 @@ def test_quota_check_deny_gpu_exceeded(client):
 
 
 def test_quota_check_returns_remaining_hours(client):
+    """/quota/check returns the remaining CPU hours reported by the quota service."""
     tc, mock_db = client
     usage = MagicMock(cpu_hours=20.0, gpu_hours=4.0)
 
@@ -133,6 +149,9 @@ def test_quota_check_returns_remaining_hours(client):
 
 
 def test_quota_check_new_user_creation(client):
+    """/quota/check looks up the user's usage through get_or_create_user_usage with the injected
+    session and the requested user id.
+    """
     tc, mock_db = client
     new_usage = MagicMock(cpu_hours=0.0, gpu_hours=0.0)
 
@@ -153,6 +172,9 @@ def test_quota_check_new_user_creation(client):
 
 
 def test_quota_check_passes_db_to_usage_service(client):
+    """The session that get_or_create_user_usage receives is the one provided by the get_db
+    dependency.
+    """
     tc, mock_db = client
     usage = MagicMock(cpu_hours=0.0, gpu_hours=0.0)
 
@@ -190,6 +212,8 @@ def test_quota_check_passes_caller_roles_not_hardcoded(client):
 
 
 def test_quota_check_defaults_to_no_roles_when_unsupplied(client):
+    """When the request supplies no roles, the quota service is evaluated with an empty roles list.
+    """
     tc, mock_db = client
     usage = MagicMock(cpu_hours=0.0, gpu_hours=0.0)
 

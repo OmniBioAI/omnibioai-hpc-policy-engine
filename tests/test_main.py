@@ -2,6 +2,8 @@
 Tests for app/main.py and app/api/deps.py.
 app/main.py calls Base.metadata.create_all at import time — we patch it before
 importing so no MySQL connection is needed.
+
+Developer: Manish Kumar <manish@omnibioai.org>
 """
 import sys
 import pytest
@@ -25,6 +27,8 @@ def hpc_app():
 # ---------------------------------------------------------------------------
 
 def test_root_returns_service_info(hpc_app):
+    """GET / returns 200 with the service name "omnibioai-hpc-policy-engine" and status "running".
+    """
     client = TestClient(hpc_app)
     response = client.get("/")
     assert response.status_code == 200
@@ -34,11 +38,13 @@ def test_root_returns_service_info(hpc_app):
 
 
 def test_app_includes_jobs_router(hpc_app):
+    """The app registers a job evaluation route."""
     paths = [r.path for r in hpc_app.routes]
     assert any("evaluate" in p for p in paths)
 
 
 def test_app_includes_quota_router(hpc_app):
+    """The app registers a quota route."""
     paths = [r.path for r in hpc_app.routes]
     assert any("quota" in p for p in paths)
 
@@ -48,6 +54,7 @@ def test_app_includes_quota_router(hpc_app):
 # ---------------------------------------------------------------------------
 
 def test_get_db_yields_session():
+    """get_db yields the session created by SessionLocal."""
     mock_session = MagicMock()
     with patch("app.api.deps.SessionLocal", return_value=mock_session):
         from app.api.deps import get_db
@@ -57,6 +64,7 @@ def test_get_db_yields_session():
 
 
 def test_get_db_closes_session_on_exit():
+    """get_db closes the session once after its consumer finishes."""
     mock_session = MagicMock()
     with patch("app.api.deps.SessionLocal", return_value=mock_session):
         from app.api.deps import get_db
@@ -70,6 +78,7 @@ def test_get_db_closes_session_on_exit():
 
 
 def test_get_db_closes_session_on_exception():
+    """get_db still closes the session once when its consumer raises."""
     mock_session = MagicMock()
     with patch("app.api.deps.SessionLocal", return_value=mock_session):
         from app.api.deps import get_db

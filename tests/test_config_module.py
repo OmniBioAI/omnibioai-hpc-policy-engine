@@ -8,6 +8,8 @@ test file in this session imports via `app.core.config`), each test here
 loads a *fresh* copy of config.py by file path (tests/_srcload.py) inside an
 os.environ patch, so the env vars are only visible to that one exec and
 nothing else in the suite is affected.
+
+Developer: Manish Kumar <manish@omnibioai.org>
 """
 import os
 from unittest.mock import patch
@@ -16,6 +18,9 @@ from tests._srcload import load
 
 
 def _load_config_with_env(env: dict):
+    """Load a fresh copy of app/core/config.py with the configuration environment variables cleared
+    and the given ones applied, and return the module.
+    """
     # os.environ is read at class-body execution time inside config.py, so
     # the patch must be active for the load() call itself.
     clean_env = {k: v for k, v in os.environ.items() if not k.startswith((
@@ -30,6 +35,9 @@ def _load_config_with_env(env: dict):
 # ---------------------------------------------------------------------------
 
 def test_defaults_used_when_no_env_vars_set():
+    """With no environment variables set, Config uses the built-in MySQL, Redis, quota-hours,
+    concurrent-jobs and app-name defaults.
+    """
     cfg = _load_config_with_env({})
     assert cfg.Config.MYSQL_HOST == "mysql"
     assert cfg.Config.MYSQL_PORT == 3306
@@ -48,6 +56,7 @@ def test_defaults_used_when_no_env_vars_set():
 # ---------------------------------------------------------------------------
 
 def test_env_vars_override_defaults():
+    """Each Config setting takes its value from the matching environment variable when it is set."""
     cfg = _load_config_with_env({
         "MYSQL_HOST": "db.internal",
         "MYSQL_PORT": "5432",
@@ -95,12 +104,14 @@ def test_non_numeric_mysql_port_raises_at_import_time():
 
 
 def test_non_numeric_default_cpu_hours_raises_at_import_time():
+    """A non-numeric DEFAULT_CPU_HOURS raises ValueError when the config module is loaded."""
     import pytest
     with pytest.raises(ValueError):
         _load_config_with_env({"DEFAULT_CPU_HOURS": "unlimited"})
 
 
 def test_non_numeric_max_concurrent_jobs_raises_at_import_time():
+    """A non-numeric MAX_CONCURRENT_JOBS raises ValueError when the config module is loaded."""
     import pytest
     with pytest.raises(ValueError):
         _load_config_with_env({"MAX_CONCURRENT_JOBS": "many"})
