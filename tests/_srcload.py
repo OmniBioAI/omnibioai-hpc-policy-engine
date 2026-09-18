@@ -27,6 +27,8 @@ shadowing so the real .py source is what gets executed and measured,
 regardless of host architecture. It does not change any production
 behavior -- Cython compiles these files essentially as-is, so the .py
 source and the compiled extension implement the same logic.
+
+Developer: Manish Kumar <manish@omnibioai.org>
 """
 import importlib.util
 import os

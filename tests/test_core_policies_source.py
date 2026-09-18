@@ -3,6 +3,8 @@ Direct-source unit tests for app/core/policies.py::validate_partition_access.
 
 Loaded via tests/_srcload.py (see that module's docstring) so its lines are
 measured even where the checked-in .so shadows the .py import.
+
+Developer: Manish Kumar <manish@omnibioai.org>
 """
 from tests._srcload import load
 
@@ -10,23 +12,31 @@ policies = load("app/core/policies.py")
 
 
 def test_dgx_partition_denied_without_dgx_access_role():
+    """Requesting the dgx-a100 partition without the dgx_access role is denied with reason "dgx
+    partition denied".
+    """
     ok, reason = policies.validate_partition_access([], "dgx-a100")
     assert ok is False
     assert reason == "dgx partition denied"
 
 
 def test_dgx_partition_denied_with_unrelated_roles():
+    """Requesting the dgx-a100 partition with roles other than dgx_access is denied."""
     ok, _reason = policies.validate_partition_access(["gpu_user", "researcher"], "dgx-a100")
     assert ok is False
 
 
 def test_dgx_partition_allowed_with_dgx_access_role():
+    """Requesting the dgx-a100 partition with the dgx_access role is allowed, with reason "partition
+    allowed".
+    """
     ok, reason = policies.validate_partition_access(["dgx_access"], "dgx-a100")
     assert ok is True
     assert reason == "partition allowed"
 
 
 def test_cpu_partition_allowed_with_no_roles():
+    """A CPU partition is allowed without any roles."""
     ok, _reason = policies.validate_partition_access([], "cpu")
     assert ok is True
 
@@ -47,6 +57,7 @@ def test_unknown_partition_name_allowed_by_default():
 
 
 def test_empty_partition_string_allowed():
+    """An empty partition name is allowed."""
     ok, _reason = policies.validate_partition_access([], "")
     assert ok is True
 

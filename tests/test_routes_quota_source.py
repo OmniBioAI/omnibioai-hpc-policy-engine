@@ -15,6 +15,8 @@ underlying QuotaService/quota logic itself is covered by
 test_quota_service_source.py and test_core_quota_source.py). A couple of
 tests run the real QuotaService end to end to prove the route's roles/
 partition forwarding actually reaches policy-critical decisions.
+
+Developer: Manish Kumar <manish@omnibioai.org>
 """
 from unittest.mock import MagicMock, patch
 
@@ -29,6 +31,7 @@ routes_quota_mod = load("app/api/routes_quota.py")
 
 
 def _allow(**kwargs):
+    """Build an allowing Decision with quota-ok defaults."""
     defaults = {"allow": True, "reason": "quota ok", "remaining_cpu_hours": 100.0, "remaining_gpu_hours": 20.0}
     defaults.update(kwargs)
     return Decision(**defaults)
@@ -36,6 +39,9 @@ def _allow(**kwargs):
 
 @pytest.fixture
 def client():
+    """Provide a TestClient for the quota router loaded directly from its .py source, with get_db
+    overridden by a mock session, together with that session.
+    """
     app = FastAPI()
     app.include_router(routes_quota_mod.router)
     mock_db = MagicMock()
@@ -48,6 +54,9 @@ def client():
 # ---------------------------------------------------------------------------
 
 def test_quota_check_allow(client):
+    """With the router loaded from source, /quota/check returns 200 with allow true when the quota
+    service allows the request.
+    """
     tc, _mock_db = client
     usage = MagicMock(cpu_hours=10.0, gpu_hours=2.0)
     with patch.object(routes_quota_mod.UsageService, "get_or_create_user_usage", return_value=usage), \
@@ -58,6 +67,7 @@ def test_quota_check_allow(client):
 
 
 def test_quota_check_deny(client):
+    """/quota/check returns allow false when the quota service denies the request."""
     tc, _mock_db = client
     usage = MagicMock(cpu_hours=119.0, gpu_hours=0.0)
     denied = Decision(allow=False, reason="cpu quota exceeded", remaining_cpu_hours=1.0, remaining_gpu_hours=24.0)
@@ -68,6 +78,9 @@ def test_quota_check_deny(client):
 
 
 def test_roles_forwarded_to_quota_service_not_hardcoded(client):
+    """The roles supplied in the request (viewer) are forwarded to QuotaService.evaluate instead of
+    a hardcoded role list.
+    """
     tc, _mock_db = client
     usage = MagicMock(cpu_hours=0.0, gpu_hours=0.0)
     with patch.object(routes_quota_mod.UsageService, "get_or_create_user_usage", return_value=usage), \
@@ -77,6 +90,7 @@ def test_roles_forwarded_to_quota_service_not_hardcoded(client):
 
 
 def test_roles_default_to_empty_list_when_unsupplied(client):
+    """When the request supplies no roles, QuotaService.evaluate receives an empty roles list."""
     tc, _mock_db = client
     usage = MagicMock(cpu_hours=0.0, gpu_hours=0.0)
     with patch.object(routes_quota_mod.UsageService, "get_or_create_user_usage", return_value=usage), \
@@ -90,6 +104,9 @@ def test_roles_default_to_empty_list_when_unsupplied(client):
 # ---------------------------------------------------------------------------
 
 def test_end_to_end_gpu_request_denied_without_role(client):
+    """With the real QuotaService, a GPU request without the gpu_user role is denied with reason
+    "gpu access denied".
+    """
     tc, _mock_db = client
     usage = MagicMock(cpu_hours=0.0, gpu_hours=0.0)
     with patch.object(routes_quota_mod.UsageService, "get_or_create_user_usage", return_value=usage):
@@ -100,6 +117,7 @@ def test_end_to_end_gpu_request_denied_without_role(client):
 
 
 def test_end_to_end_dgx_partition_allowed_with_correct_roles(client):
+    """With the real QuotaService, a dgx-a100 request with the required roles is allowed."""
     tc, _mock_db = client
     usage = MagicMock(cpu_hours=0.0, gpu_hours=0.0)
     with patch.object(routes_quota_mod.UsageService, "get_or_create_user_usage", return_value=usage):
@@ -115,12 +133,14 @@ def test_end_to_end_dgx_partition_allowed_with_correct_roles(client):
 # ---------------------------------------------------------------------------
 
 def test_missing_user_id_rejected(client):
+    """A quota check without a user_id is rejected with 422."""
     tc, _mock_db = client
     response = tc.post("/quota/check", json={"cpu_hours": 1.0})
     assert response.status_code == 422
 
 
 def test_malformed_json_body_rejected(client):
+    """A quota check whose body is not valid JSON is rejected with 422."""
     tc, _mock_db = client
     response = tc.post(
         "/quota/check",
@@ -131,6 +151,7 @@ def test_malformed_json_body_rejected(client):
 
 
 def test_roles_wrong_type_rejected(client):
+    """A quota check whose roles is a bare string instead of a list is rejected with 422."""
     tc, _mock_db = client
     response = tc.post("/quota/check", json={"user_id": "u7", "roles": "gpu_user"})
     assert response.status_code == 422
@@ -148,6 +169,9 @@ def test_negative_cpu_hours_accepted_without_validation(client):
 
 
 def test_db_session_from_dependency_override_is_used(client):
+    """The session passed to get_or_create_user_usage is the one supplied by the get_db dependency
+    override.
+    """
     tc, mock_db = client
     usage = MagicMock(cpu_hours=0.0, gpu_hours=0.0)
     with patch.object(routes_quota_mod.UsageService, "get_or_create_user_usage", return_value=usage) as mock_svc, \

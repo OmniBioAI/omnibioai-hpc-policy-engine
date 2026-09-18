@@ -14,6 +14,8 @@ the stub's actual current behavior rather than inventing scheduler-failure
 scenarios the code doesn't implement. SchedulerAdapter/SchedulerService are
 also not wired into any API route (grep of app/api/ finds no reference to
 either), so there is no HTTP-level test to add for them.
+
+Developer: Manish Kumar <manish@omnibioai.org>
 """
 import asyncio
 
@@ -23,16 +25,21 @@ scheduler = load("app/core/scheduler.py")
 
 
 def test_get_cluster_load_returns_expected_keys():
+    """get_cluster_load returns exactly the keys cpu_load, gpu_load and running_jobs."""
     result = asyncio.run(scheduler.SchedulerAdapter().get_cluster_load())
     assert set(result.keys()) == {"cpu_load", "gpu_load", "running_jobs"}
 
 
 def test_get_cluster_load_values_are_stable_stub_values():
+    """get_cluster_load returns the fixed stub values 0.45 CPU load, 0.60 GPU load and 21 running
+    jobs.
+    """
     result = asyncio.run(scheduler.SchedulerAdapter().get_cluster_load())
     assert result == {"cpu_load": 0.45, "gpu_load": 0.60, "running_jobs": 21}
 
 
 def test_get_cluster_load_is_independent_across_instances():
+    """Two SchedulerAdapter instances return equal cluster load."""
     a = asyncio.run(scheduler.SchedulerAdapter().get_cluster_load())
     b = asyncio.run(scheduler.SchedulerAdapter().get_cluster_load())
     assert a == b

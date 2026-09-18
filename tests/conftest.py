@@ -1,3 +1,10 @@
+"""Shared pytest fixtures for the HPC policy engine tests: a mocked database
+session and usage record, a client for the policy router, and a client for the
+quota router whose database dependency is overridden, so no test connects to
+MySQL. It also stubs swagger_ui_bundle when that package is not installed.
+
+Developer: Manish Kumar <manish@omnibioai.org>
+"""
 import sys
 import pathlib
 import tempfile
@@ -19,11 +26,15 @@ except ImportError:
 
 @pytest.fixture
 def mock_db():
+    """Provide a MagicMock standing in for a SQLAlchemy session."""
     return MagicMock()
 
 
 @pytest.fixture
 def mock_usage_record():
+    """Provide a mock usage record for user "u1" with zero CPU hours, zero GPU hours and no running
+    jobs.
+    """
     record = MagicMock()
     record.user_id = "u1"
     record.cpu_hours = 0.0
@@ -34,6 +45,7 @@ def mock_usage_record():
 
 @pytest.fixture
 def policy_client():
+    """Provide a TestClient for a FastAPI app that includes only the policy router."""
     from app.api.routes_policy import router
     app = FastAPI()
     app.include_router(router)

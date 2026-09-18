@@ -6,6 +6,8 @@ def make_extensions, and the setup() call (which calls make_extensions
 with the real EXTENSIONS list, covering the "file exists" branch).
 
 Explicit tests cover the "file not found" branch (warning + skip).
+
+Developer: Manish Kumar <manish@omnibioai.org>
 """
 import os
 import sys
@@ -37,6 +39,7 @@ def _load_setup():
 
 @pytest.fixture(scope="module")
 def setup_mod():
+    """Load setup.py with Cython mocked and provide the resulting module."""
     return _load_setup()
 
 
@@ -45,15 +48,18 @@ def setup_mod():
 # ---------------------------------------------------------------------------
 
 def test_setup_module_has_make_extensions(setup_mod):
+    """setup.py exposes a callable make_extensions."""
     assert callable(setup_mod.make_extensions)
 
 
 def test_extensions_list_is_nonempty(setup_mod):
+    """setup.py defines a non-empty EXTENSIONS list."""
     assert isinstance(setup_mod.EXTENSIONS, list)
     assert len(setup_mod.EXTENSIONS) > 0
 
 
 def test_extensions_entries_are_python_files(setup_mod):
+    """Every EXTENSIONS entry is a path to a .py file."""
     for path in setup_mod.EXTENSIONS:
         assert path.endswith(".py"), f"Expected .py, got: {path}"
 
@@ -63,6 +69,7 @@ def test_extensions_entries_are_python_files(setup_mod):
 # ---------------------------------------------------------------------------
 
 def test_make_extensions_returns_extension_for_existing_file(setup_mod, tmp_path):
+    """make_extensions returns one extension for an existing source file."""
     src = tmp_path / "mymod.py"
     src.write_text("x = 1")
     result = setup_mod.make_extensions([str(src)])
@@ -70,6 +77,7 @@ def test_make_extensions_returns_extension_for_existing_file(setup_mod, tmp_path
 
 
 def test_make_extensions_module_name_strips_py_suffix(setup_mod, tmp_path):
+    """The extension created for a .py file has a module name that does not end in .py."""
     src = tmp_path / "alpha.py"
     src.write_text("pass")
     result = setup_mod.make_extensions([str(src)])
@@ -84,6 +92,9 @@ def test_make_extensions_module_name_strips_py_suffix(setup_mod, tmp_path):
 # ---------------------------------------------------------------------------
 
 def test_make_extensions_skips_missing_file(setup_mod, capsys):
+    """make_extensions skips a source path that does not exist, returning an empty list and printing
+    a WARNING.
+    """
     result = setup_mod.make_extensions(["this_path_does_not_exist_xyz.py"])
     assert result == []
     captured = capsys.readouterr()
@@ -91,6 +102,7 @@ def test_make_extensions_skips_missing_file(setup_mod, capsys):
 
 
 def test_make_extensions_warning_contains_path(setup_mod, capsys):
+    """The warning for a missing source file includes that file's path."""
     missing = "no_such_file_abc.py"
     setup_mod.make_extensions([missing])
     captured = capsys.readouterr()
@@ -102,6 +114,9 @@ def test_make_extensions_warning_contains_path(setup_mod, capsys):
 # ---------------------------------------------------------------------------
 
 def test_make_extensions_mixed_existing_and_missing(setup_mod, tmp_path, capsys):
+    """With one existing and one missing file, make_extensions returns only the existing one and
+    prints a WARNING for the missing one.
+    """
     existing = tmp_path / "real.py"
     existing.write_text("pass")
     result = setup_mod.make_extensions([str(existing), "nonexistent_file.py"])
@@ -111,5 +126,6 @@ def test_make_extensions_mixed_existing_and_missing(setup_mod, tmp_path, capsys)
 
 
 def test_make_extensions_empty_list(setup_mod):
+    """make_extensions returns an empty list for an empty input list."""
     result = setup_mod.make_extensions([])
     assert result == []

@@ -13,6 +13,8 @@ the same .py source, so behavior is identical either way.
 
 Scenarios mirror tests/test_quota_service.py (kept intact, not modified);
 this file adds check-ordering/precedence coverage that file doesn't target.
+
+Developer: Manish Kumar <manish@omnibioai.org>
 """
 from unittest.mock import MagicMock, patch
 
@@ -23,6 +25,7 @@ QuotaService = quota_service_mod.QuotaService
 
 
 def _usage(cpu_hours=0.0, gpu_hours=0.0):
+    """Build a mock usage record with the given CPU and GPU hours."""
     u = MagicMock()
     u.cpu_hours = cpu_hours
     u.gpu_hours = gpu_hours
@@ -30,6 +33,7 @@ def _usage(cpu_hours=0.0, gpu_hours=0.0):
 
 
 def _request(gpus=0, partition="cpu", cpu_hours=1.0, gpu_hours=0.0):
+    """Build a mock request with the given GPU count, partition and CPU and GPU hours."""
     r = MagicMock()
     r.gpus = gpus
     r.partition = partition
@@ -68,6 +72,9 @@ def test_partition_denied_short_circuits_before_quota_check():
 
 
 def test_all_checks_pass_falls_through_to_quota_result():
+    """When the GPU and partition checks pass, QuotaService returns the quota evaluation's allowed
+    decision with reason "quota ok".
+    """
     decision = QuotaService.evaluate(
         usage=_usage(cpu_hours=10.0, gpu_hours=5.0),
         request=_request(gpus=1, partition="cpu", cpu_hours=5.0, gpu_hours=1.0),
@@ -92,6 +99,9 @@ def test_denied_decision_has_zero_remaining_hours_defaults():
 
 
 def test_quota_exceeded_after_passing_gpu_and_partition_checks():
+    """When the GPU and partition checks pass but the CPU request exceeds the quota, the decision is
+    denied with reason "cpu quota exceeded".
+    """
     decision = QuotaService.evaluate(
         usage=_usage(cpu_hours=119.5),
         request=_request(gpus=0, partition="cpu", cpu_hours=1.0),
@@ -102,6 +112,7 @@ def test_quota_exceeded_after_passing_gpu_and_partition_checks():
 
 
 def test_returns_decision_instance():
+    """QuotaService.evaluate returns a Decision instance."""
     from app.models.decision import Decision
     decision = QuotaService.evaluate(
         usage=_usage(),

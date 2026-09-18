@@ -8,6 +8,8 @@ evaluate_quota reads its limits from app.core.config.Config at call time
 (Config.DEFAULT_CPU_HOURS / DEFAULT_GPU_HOURS are plain class attributes),
 so tests patch those attributes directly to pin deterministic limits rather
 than depending on whatever env vars happen to be set for the process.
+
+Developer: Manish Kumar <manish@omnibioai.org>
 """
 from unittest.mock import patch
 
@@ -17,6 +19,7 @@ quota = load("app/core/quota.py")
 
 
 def _patched_limits(cpu_limit, gpu_limit):
+    """Patch the configured default CPU and GPU hour limits to the given values."""
     return patch.multiple(
         quota.Config,
         DEFAULT_CPU_HOURS=cpu_limit,
@@ -29,6 +32,9 @@ def _patched_limits(cpu_limit, gpu_limit):
 # ---------------------------------------------------------------------------
 
 def test_within_both_limits_allowed():
+    """A request within both limits is allowed with reason "quota ok", reporting the remaining CPU
+    and GPU hours (limit minus current usage).
+    """
     with _patched_limits(100, 20):
         ok, reason, rem_cpu, rem_gpu = quota.evaluate_quota(10, 5, 5, 5)
     assert ok is True
@@ -47,6 +53,8 @@ def test_request_exactly_equal_to_remaining_cpu_is_allowed():
 
 
 def test_request_one_over_remaining_cpu_denied():
+    """A CPU request one hour over the remaining budget is denied with reason "cpu quota exceeded".
+    """
     with _patched_limits(100, 20):
         ok, reason, _rem_cpu, _rem_gpu = quota.evaluate_quota(90, 0, 10.0001, 0)
     assert ok is False
@@ -54,6 +62,9 @@ def test_request_one_over_remaining_cpu_denied():
 
 
 def test_request_exactly_equal_to_remaining_gpu_is_allowed():
+    """A GPU request exactly equal to the remaining GPU hours is allowed, and 5 remaining GPU hours
+    are reported.
+    """
     with _patched_limits(100, 20):
         ok, _reason, _rem_cpu, rem_gpu = quota.evaluate_quota(0, 15, 0, 5)
     assert ok is True
@@ -61,6 +72,8 @@ def test_request_exactly_equal_to_remaining_gpu_is_allowed():
 
 
 def test_request_one_over_remaining_gpu_denied():
+    """A GPU request one hour over the remaining budget is denied with reason "gpu quota exceeded".
+    """
     with _patched_limits(100, 20):
         ok, reason, _rem_cpu, _rem_gpu = quota.evaluate_quota(0, 15, 0, 5.0001)
     assert ok is False
@@ -81,6 +94,9 @@ def test_cpu_exceeded_denies_before_checking_gpu():
 
 
 def test_gpu_exceeded_when_cpu_is_within_limits():
+    """When the CPU request fits but the GPU request does not, the request is denied with reason
+    "gpu quota exceeded".
+    """
     with _patched_limits(100, 10):
         ok, reason, _rem_cpu, _rem_gpu = quota.evaluate_quota(0, 9, 1, 5)
     assert ok is False
@@ -103,6 +119,7 @@ def test_remaining_hours_reported_even_when_denied():
 # ---------------------------------------------------------------------------
 
 def test_zero_request_always_allowed_even_at_zero_remaining():
+    """A zero request is allowed even when no hours remain, and reports zero remaining."""
     with _patched_limits(10, 10):
         ok, _reason, rem_cpu, rem_gpu = quota.evaluate_quota(10, 10, 0, 0)
     assert ok is True
