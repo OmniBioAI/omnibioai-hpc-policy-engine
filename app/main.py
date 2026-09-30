@@ -6,13 +6,12 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from swagger_ui_bundle import swagger_ui_path
 
-_swagger_js = pathlib.Path(swagger_ui_path, "swagger-ui-bundle.js").read_text()
-_swagger_css = pathlib.Path(swagger_ui_path, "swagger-ui.css").read_text()
-
-from app.db.session import Base, engine
-
 from app.api.routes_policy import router as policy_router
 from app.api.routes_quota import router as quota_router
+from app.db.session import Base, engine
+
+_swagger_js = pathlib.Path(swagger_ui_path, "swagger-ui-bundle.js").read_text()
+_swagger_css = pathlib.Path(swagger_ui_path, "swagger-ui.css").read_text()
 
 Base.metadata.create_all(bind=engine)
 

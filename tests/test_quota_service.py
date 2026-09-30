@@ -4,11 +4,9 @@ request objects with no database.
 
 Developer: Manish Kumar <manish@omnibioai.org>
 """
-import pytest
 from unittest.mock import MagicMock
+
 from app.services.quota_service import QuotaService
-from app.models.decision import Decision
-from app.models.quota import QuotaCheck
 
 
 def _usage(cpu_hours=0.0, gpu_hours=0.0):

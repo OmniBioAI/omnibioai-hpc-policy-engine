@@ -4,8 +4,8 @@ created with zero usage, committed and refreshed.
 
 Developer: Manish Kumar <manish@omnibioai.org>
 """
-import pytest
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock
+
 from app.services.usage_service import UsageService
 
 
@@ -41,7 +41,7 @@ def test_creates_new_record_if_not_found():
     """When no record exists, one is added, committed and refreshed once each."""
     db = _make_db(existing_record=None)
 
-    result = UsageService.get_or_create_user_usage(db, "new-user")
+    UsageService.get_or_create_user_usage(db, "new-user")
 
     db.add.assert_called_once()
     db.commit.assert_called_once()
@@ -75,7 +75,6 @@ def test_returns_refreshed_record_for_new_user():
     record.
     """
     db = _make_db(existing_record=None)
-    refreshed = MagicMock()
     db.refresh.side_effect = lambda r: setattr(r, "_refreshed", True)
 
     result = UsageService.get_or_create_user_usage(db, "u3")
