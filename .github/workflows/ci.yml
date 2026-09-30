@@ -53,6 +53,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v4
@@ -68,20 +70,48 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ghcr.io/omnibioai/omnibioai-hpc-policy-engine
           tags: |
             type=semver,pattern={{version}}
             type=raw,value=latest
+            type=raw,value=${{ github.sha }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Assert full OCI revision
+        env:
+          FULL_SHA: ${{ github.sha }}
+        run: |
+          test "${#FULL_SHA}" -eq 40
+          test "$FULL_SHA" = "$(git rev-parse HEAD)"
 
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          labels: |
+            ${{ steps.meta.outputs.labels }}
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ github.ref_name }}
+          sbom: true
+          provenance: mode=max
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Verify remote multiarch manifest
+        env:
+          FULL_SHA: ${{ github.sha }}
+        run: |
+          set -eu
+          manifest=$(docker buildx imagetools inspect "ghcr.io/omnibioai/omnibioai-hpc-policy-engine:$FULL_SHA")
+          echo "$manifest"
+          echo "$manifest" | grep -q 'Platform:    linux/amd64'
+          echo "$manifest" | grep -q 'Platform:    linux/arm64'
