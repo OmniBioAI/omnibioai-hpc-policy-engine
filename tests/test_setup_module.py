@@ -9,11 +9,12 @@ Explicit tests cover the "file not found" branch (warning + skip).
 
 Developer: Manish Kumar <manish@omnibioai.org>
 """
+import importlib.util
 import os
 import sys
-import importlib.util
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 SETUP_PY = os.path.normpath(
     os.path.join(os.path.dirname(__file__), "..", "setup.py")

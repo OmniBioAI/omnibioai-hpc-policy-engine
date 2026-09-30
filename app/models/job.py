@@ -1,5 +1,5 @@
+
 from pydantic import BaseModel
-from typing import Optional
 
 
 class JobRequest(BaseModel):
@@ -20,4 +20,4 @@ class JobRequest(BaseModel):
     # doesn't supply roles gets the same (permissive, no-gpu/no-dgx-
     # partition) outcome those checks already give an empty roles list.
     roles: list[str] = []
-    org_id: Optional[str] = None
+    org_id: str | None = None

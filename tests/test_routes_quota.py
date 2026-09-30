@@ -13,17 +13,24 @@ regression test locking in the hardcoded-roles fix.
 
 Developer: Manish Kumar <manish@omnibioai.org>
 """
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+
 from app.api.deps import get_db
 from app.models.decision import Decision
 
 
 def _allow(**kwargs):
     """Build an allowing Decision with quota-ok defaults and optional field overrides."""
-    defaults = dict(allow=True, reason="quota ok", remaining_cpu_hours=100.0, remaining_gpu_hours=20.0)
+    defaults = {
+        "allow": True,
+        "reason": "quota ok",
+        "remaining_cpu_hours": 100.0,
+        "remaining_gpu_hours": 20.0,
+    }
     defaults.update(kwargs)
     return Decision(**defaults)
 
@@ -58,7 +65,7 @@ def client(quota_app):
 
 def test_quota_check_allow_within_limits(client):
     """/quota/check returns 200 with allow true when the quota service allows the request."""
-    tc, mock_db = client
+    tc, _mock_db = client
     usage = MagicMock(cpu_hours=10.0, gpu_hours=2.0, jobs_running=0)
 
     with patch("app.api.routes_quota.UsageService.get_or_create_user_usage",
@@ -81,7 +88,7 @@ def test_quota_check_deny_cpu_exceeded(client):
     """/quota/check returns 200 with allow false and a reason mentioning cpu when the quota service
     denies for CPU.
     """
-    tc, mock_db = client
+    tc, _mock_db = client
     usage = MagicMock(cpu_hours=118.0, gpu_hours=0.0)
 
     with patch("app.api.routes_quota.UsageService.get_or_create_user_usage",
@@ -106,7 +113,7 @@ def test_quota_check_deny_gpu_exceeded(client):
     """/quota/check returns 200 with allow false and a reason mentioning gpu when the quota service
     denies for GPU.
     """
-    tc, mock_db = client
+    tc, _mock_db = client
     usage = MagicMock(cpu_hours=0.0, gpu_hours=23.0)
 
     with patch("app.api.routes_quota.UsageService.get_or_create_user_usage",
@@ -128,7 +135,7 @@ def test_quota_check_deny_gpu_exceeded(client):
 
 def test_quota_check_returns_remaining_hours(client):
     """/quota/check returns the remaining CPU hours reported by the quota service."""
-    tc, mock_db = client
+    tc, _mock_db = client
     usage = MagicMock(cpu_hours=20.0, gpu_hours=4.0)
 
     with patch("app.api.routes_quota.UsageService.get_or_create_user_usage",
@@ -195,7 +202,7 @@ def test_quota_check_passes_caller_roles_not_hardcoded(client):
     for every request, regardless of the caller's real roles -- meaning
     any user could pass a GPU/DGX quota check. The route must now forward
     whatever roles the caller actually supplied."""
-    tc, mock_db = client
+    tc, _mock_db = client
     usage = MagicMock(cpu_hours=0.0, gpu_hours=0.0)
 
     with patch("app.api.routes_quota.UsageService.get_or_create_user_usage",
@@ -214,7 +221,7 @@ def test_quota_check_passes_caller_roles_not_hardcoded(client):
 def test_quota_check_defaults_to_no_roles_when_unsupplied(client):
     """When the request supplies no roles, the quota service is evaluated with an empty roles list.
     """
-    tc, mock_db = client
+    tc, _mock_db = client
     usage = MagicMock(cpu_hours=0.0, gpu_hours=0.0)
 
     with patch("app.api.routes_quota.UsageService.get_or_create_user_usage",

@@ -5,11 +5,12 @@ MySQL. It also stubs swagger_ui_bundle when that package is not installed.
 
 Developer: Manish Kumar <manish@omnibioai.org>
 """
-import sys
 import pathlib
+import sys
 import tempfile
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
@@ -57,8 +58,8 @@ def quota_client(mock_db):
     """TestClient for quota routes with DB dependency overridden."""
     with patch("app.db.session.create_engine"), \
          patch("app.db.session.SessionLocal"):
-        from app.api.routes_quota import router
         from app.api.deps import get_db
+        from app.api.routes_quota import router
 
         app = FastAPI()
         app.include_router(router)

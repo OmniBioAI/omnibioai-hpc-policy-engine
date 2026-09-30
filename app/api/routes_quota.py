@@ -1,11 +1,12 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
-
 from app.models.quota import QuotaCheck
-from app.services.usage_service import UsageService
 from app.services.quota_service import QuotaService
+from app.services.usage_service import UsageService
 
 router = APIRouter(prefix="/quota", tags=["quota"])
 
@@ -13,7 +14,7 @@ router = APIRouter(prefix="/quota", tags=["quota"])
 @router.post("/check")
 async def check_quota(
     request: QuotaCheck,
-    db: Session = Depends(get_db),
+    db: Annotated[Session, Depends(get_db)],
 ):
 
     usage = UsageService.get_or_create_user_usage(

@@ -3,9 +3,10 @@ Cython build configuration for omnibioai-hpc-policy-engine IP protection.
 Usage: python setup.py build_ext --inplace
 """
 import os
-from setuptools import setup, find_packages
+
 from Cython.Build import cythonize
 from Cython.Compiler import Options
+from setuptools import find_packages, setup
 from setuptools.extension import Extension
 
 Options.annotate = False

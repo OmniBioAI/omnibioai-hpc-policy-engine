@@ -5,8 +5,8 @@ by coverage.  Covers conftest.py lines: 22, 27-32, 37-40, 46-54.
 Developer: Manish Kumar <manish@omnibioai.org>
 """
 from unittest.mock import MagicMock, patch
-from app.models.decision import Decision
 
+from app.models.decision import Decision
 
 # ---------------------------------------------------------------------------
 # mock_db fixture  (conftest.py:22)
@@ -85,7 +85,7 @@ def test_policy_client_evaluate_returns_partition(policy_client):
 
 def test_quota_client_is_tuple_of_client_and_db(quota_client):
     """The quota_client fixture yields a client together with the mock database session."""
-    tc, db = quota_client
+    _, db = quota_client
     assert isinstance(db, MagicMock)
 
 
@@ -93,7 +93,7 @@ def test_quota_client_check_allow(quota_client):
     """Through the quota_client fixture, /quota/check returns 200 with allow true when the quota
     service allows the request.
     """
-    tc, mock_db = quota_client
+    tc, _mock_db = quota_client
     usage = MagicMock(cpu_hours=10.0, gpu_hours=2.0)
     decision = Decision(
         allow=True,
@@ -119,7 +119,7 @@ def test_quota_client_check_deny(quota_client):
     """/quota/check returns 200 with allow false and a reason mentioning CPU when the quota service
     denies the request.
     """
-    tc, mock_db = quota_client
+    tc, _mock_db = quota_client
     usage = MagicMock(cpu_hours=119.0, gpu_hours=0.0)
     decision = Decision(
         allow=False,

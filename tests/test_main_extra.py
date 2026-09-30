@@ -7,8 +7,9 @@ Cover app/main.py endpoints not reached by test_main.py:
 Developer: Manish Kumar <manish@omnibioai.org>
 """
 import sys
-import pytest
 from unittest.mock import patch
+
+import pytest
 from fastapi.testclient import TestClient
 
 

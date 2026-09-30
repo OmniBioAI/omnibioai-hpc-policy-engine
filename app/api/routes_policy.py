@@ -1,7 +1,8 @@
 from fastapi import APIRouter
-from app.models.job import JobRequest
+
 from app.core.gpu import validate_gpu_access
 from app.core.policies import validate_partition_access
+from app.models.job import JobRequest
 
 router = APIRouter(prefix="/jobs", tags=["jobs"])
 

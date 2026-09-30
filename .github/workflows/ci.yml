@@ -31,7 +31,7 @@ jobs:
           else
             pip install -e .
           fi
-          pip install ruff pytest
+          pip install ruff pytest httpx2 setuptools
 
       - name: Lint with ruff
         run: ruff check .

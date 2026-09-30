@@ -6,8 +6,9 @@ importing so no MySQL connection is needed.
 Developer: Manish Kumar <manish@omnibioai.org>
 """
 import sys
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 from fastapi.testclient import TestClient
 
 
@@ -20,6 +21,20 @@ def hpc_app():
     with patch.object(Base.metadata, "create_all"):
         import app.main as main_mod
         yield main_mod.app
+
+
+def _route_paths(routes):
+    paths = []
+    for route in routes:
+        path = getattr(route, "path", None)
+        if path is not None:
+            paths.append(path)
+        nested = getattr(route, "routes", None)
+        if nested is None:
+            nested = getattr(getattr(route, "original_router", None), "routes", None)
+        if nested:
+            paths.extend(_route_paths(nested))
+    return paths
 
 
 # ---------------------------------------------------------------------------
@@ -39,13 +54,13 @@ def test_root_returns_service_info(hpc_app):
 
 def test_app_includes_jobs_router(hpc_app):
     """The app registers a job evaluation route."""
-    paths = [r.path for r in hpc_app.routes]
+    paths = _route_paths(hpc_app.routes)
     assert any("evaluate" in p for p in paths)
 
 
 def test_app_includes_quota_router(hpc_app):
     """The app registers a quota route."""
-    paths = [r.path for r in hpc_app.routes]
+    paths = _route_paths(hpc_app.routes)
     assert any("quota" in p for p in paths)
 
 
@@ -84,8 +99,6 @@ def test_get_db_closes_session_on_exception():
         from app.api.deps import get_db
         gen = get_db()
         next(gen)
-        try:
+        with pytest.raises(Exception, match="something broke"):
             gen.throw(Exception("something broke"))
-        except Exception:
-            pass
     mock_session.close.assert_called_once()
