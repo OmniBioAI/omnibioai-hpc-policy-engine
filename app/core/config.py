@@ -1,3 +1,13 @@
+"""
+OmniBioAI app.core.config.
+
+Purpose:
+    Defines the Config class for app.core.config.
+
+Author:
+    Manish Kumar <manish@omnibioai.org>
+"""
+
 import os
 
 

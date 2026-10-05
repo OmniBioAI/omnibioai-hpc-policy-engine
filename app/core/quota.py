@@ -1,3 +1,13 @@
+"""
+OmniBioAI app.core.quota.
+
+Purpose:
+    Defines evaluate_quota for app.core.quota.
+
+Author:
+    Manish Kumar <manish@omnibioai.org>
+"""
+
 from app.core.config import Config
 
 

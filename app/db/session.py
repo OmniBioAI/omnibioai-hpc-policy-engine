@@ -1,3 +1,13 @@
+"""
+OmniBioAI app.db.session.
+
+Purpose:
+    Defines DATABASE_URL, engine, SessionLocal and Base values for app.db.session.
+
+Author:
+    Manish Kumar <manish@omnibioai.org>
+"""
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 

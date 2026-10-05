@@ -1,3 +1,13 @@
+"""
+OmniBioAI app.models.quota.
+
+Purpose:
+    Defines the QuotaCheck data model for app.models.quota.
+
+Author:
+    Manish Kumar <manish@omnibioai.org>
+"""
+
 from pydantic import BaseModel
 
 

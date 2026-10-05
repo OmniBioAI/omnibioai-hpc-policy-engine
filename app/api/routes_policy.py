@@ -1,3 +1,13 @@
+"""
+OmniBioAI app.api.routes_policy.
+
+Purpose:
+    Defines HTTP route handlers for app.api.routes_policy, including evaluate_job.
+
+Author:
+    Manish Kumar <manish@omnibioai.org>
+"""
+
 from fastapi import APIRouter
 
 from app.core.gpu import validate_gpu_access

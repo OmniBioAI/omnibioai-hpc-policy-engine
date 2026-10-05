@@ -1,3 +1,13 @@
+"""
+OmniBioAI app.services.usage_service.
+
+Purpose:
+    Defines UsageService with get_or_create_user_usage methods for app.services.usage_service.
+
+Author:
+    Manish Kumar <manish@omnibioai.org>
+"""
+
 from sqlalchemy.orm import Session
 
 from app.db.models import UsageRecord

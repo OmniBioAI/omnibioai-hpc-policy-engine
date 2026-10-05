@@ -1,3 +1,13 @@
+"""
+OmniBioAI app.services.quota_service.
+
+Purpose:
+    Defines QuotaService with evaluate methods for app.services.quota_service.
+
+Author:
+    Manish Kumar <manish@omnibioai.org>
+"""
+
 from app.core.gpu import validate_gpu_access
 from app.core.policies import validate_partition_access
 from app.core.quota import evaluate_quota

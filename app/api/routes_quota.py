@@ -1,3 +1,13 @@
+"""
+OmniBioAI app.api.routes_quota.
+
+Purpose:
+    Defines HTTP route handlers for app.api.routes_quota, including check_quota.
+
+Author:
+    Manish Kumar <manish@omnibioai.org>
+"""
+
 from typing import Annotated
 
 from fastapi import APIRouter, Depends

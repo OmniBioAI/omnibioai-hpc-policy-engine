@@ -1,3 +1,13 @@
+"""
+OmniBioAI app.models.decision.
+
+Purpose:
+    Defines the Decision data model for app.models.decision.
+
+Author:
+    Manish Kumar <manish@omnibioai.org>
+"""
+
 from pydantic import BaseModel
 
 

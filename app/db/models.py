@@ -1,3 +1,13 @@
+"""
+OmniBioAI app.db.models.
+
+Purpose:
+    Defines the UsageRecord data model for app.db.models.
+
+Author:
+    Manish Kumar <manish@omnibioai.org>
+"""
+
 from sqlalchemy import Column, Float, Integer, String
 
 from app.db.session import Base

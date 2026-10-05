@@ -1,4 +1,14 @@
 
+"""
+OmniBioAI app.models.job.
+
+Purpose:
+    Defines the JobRequest data model for app.models.job.
+
+Author:
+    Manish Kumar <manish@omnibioai.org>
+"""
+
 from pydantic import BaseModel
 
 

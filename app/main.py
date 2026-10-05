@@ -1,3 +1,13 @@
+"""
+OmniBioAI app.main.
+
+Purpose:
+    Defines HTTP route handlers for app.main, including swagger_static, custom_swagger_ui, health and root.
+
+Author:
+    Manish Kumar <manish@omnibioai.org>
+"""
+
 import json
 import os
 import pathlib
