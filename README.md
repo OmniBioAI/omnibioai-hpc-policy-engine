@@ -157,7 +157,7 @@ omnibioai-hpc-policy-engine/
 ## Testing
 
 ```bash
-cd ~/Desktop/machine/omnibioai-hpc-policy-engine
+cd ~/Desktop/omnibioai-ecosystem/omnibioai-hpc-policy-engine
 pytest tests/ -v --cov=.
 
 # Covers quota service, usage service, policy routes,
@@ -337,7 +337,7 @@ its `MYSQL_*` defaults.
 ### Via OmniBioAI Studio (recommended)
 
 ```bash
-cd ~/Desktop/machine/omnibioai-studio
+cd ~/Desktop/omnibioai-ecosystem/omnibioai-studio
 docker compose up -d hpc-policy-engine
 ```
 
